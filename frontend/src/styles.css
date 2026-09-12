@@ -1,0 +1,7 @@
+body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial; padding:20px}
+.container{max-width:800px;margin:0 auto}
+.controls{display:flex;gap:12px;align-items:center;margin-bottom:12px}
+.slots{list-style:none;padding:0}
+.slots li{padding:8px;border:1px solid #ddd;margin-bottom:8px}
+.slots li.reserved{opacity:0.6}
+.message{margin:8px 0;color:green}
