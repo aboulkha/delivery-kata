@@ -2,6 +2,7 @@ package com.example.delivery.service;
 
 import com.example.delivery.dto.ReservationRequest;
 import com.example.delivery.exception.SlotUnavailableException;
+import com.example.delivery.model.DeliveryMethod;
 import com.example.delivery.model.Reservation;
 import com.example.delivery.model.TimeSlot;
 import com.example.delivery.repository.ReservationRepository;
@@ -24,11 +25,11 @@ public class DeliveryService {
         this.reservationRepo = reservationRepo;
     }
 
-    public List<com.example.delivery.model.DeliveryMethod> getMethods() {
-        return List.of(com.example.delivery.model.DeliveryMethod.values());
+    public List<DeliveryMethod> getMethods() {
+        return List.of(DeliveryMethod.values());
     }
 
-    public List<TimeSlot> getSlots(com.example.delivery.model.DeliveryMethod method, LocalDate date) {
+    public List<TimeSlot> getSlots(DeliveryMethod method, LocalDate date) {
         return slotRepo.findByMethodAndDate(method, date);
     }
 

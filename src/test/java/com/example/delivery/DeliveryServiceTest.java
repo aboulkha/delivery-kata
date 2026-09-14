@@ -1,6 +1,7 @@
 package com.example.delivery;
 
 import com.example.delivery.dto.ReservationRequest;
+import com.example.delivery.model.DeliveryMethod;
 import com.example.delivery.model.TimeSlot;
 import com.example.delivery.repository.TimeSlotRepository;
 import com.example.delivery.service.DeliveryService;
@@ -24,7 +25,7 @@ public class DeliveryServiceTest {
 
     @Test
     public void concurrentReservationShouldAllowOnlyOne() throws InterruptedException, ExecutionException {
-        List<TimeSlot> slots = service.getSlots(com.example.delivery.model.DeliveryMethod.DELIVERY, LocalDate.now());
+        List<TimeSlot> slots = service.getSlots(DeliveryMethod.DELIVERY, LocalDate.now());
         Assertions.assertFalse(slots.isEmpty());
         TimeSlot slot = slots.get(0);
 

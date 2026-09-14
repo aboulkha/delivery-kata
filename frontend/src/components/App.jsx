@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import LanguageSwitcher from './LanguageSwitcher'
+import ReservationForm from './ReservationForm'
+import SlotList from './SlotList'
 
 const translations = {
   en: {
@@ -114,83 +117,49 @@ export default function App() {
               <h1>{t.title}</h1>
             </div>
 
-            <div className="language-switcher" aria-label={t.language}>
-              <button
-                className={locale === 'en' ? 'lang-btn active' : 'lang-btn'}
-                onClick={() => setLocale('en')}
-                type="button"
-              >
-                EN
-              </button>
-              <button
-                className={locale === 'fr' ? 'lang-btn active' : 'lang-btn'}
-                onClick={() => setLocale('fr')}
-                type="button"
-              >
-                FR
-              </button>
-            </div>
+            <LanguageSwitcher
+              locale={locale}
+              onChangeLocale={setLocale}
+              languageLabel={t.language}
+            />
           </div>
         </header>
 
-        <section className="control-bar">
-          <label className="field">
-            <span>{t.method}</span>
-            <select value={method} onChange={(e) => setMethod(e.target.value)}>
-              {methods.map((m) => (
-                <option key={m.id} value={m.id}>
-                  {prettyMethodName(m)}
-                </option>
-              ))}
-            </select>
-          </label>
+        <ReservationForm
+          methods={methods}
+          method={method}
+          date={date}
+          loading={loading}
+          onMethodChange={setMethod}
+          onDateChange={setDate}
+          onLoadSlots={loadSlots}
+          prettyMethodName={prettyMethodName}
+          texts={t}
+        />
 
-          <label className="field">
-            <span>{t.date}</span>
-            <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
-          </label>
+        {error && (
+          <div className="alert alert-error">
+            {error === 'Failed to load slots' ? t.failedLoad : error}
+          </div>
+        )}
+        {message && (
+          <div className="alert alert-success">
+            {message === 'Reservation successful'
+              ? t.success
+              : message === 'Slot unavailable'
+                ? t.unavailable
+                : message === 'Reservation failed'
+                  ? t.failed
+                  : message}
+          </div>
+        )}
 
-          <button className="primary-button" onClick={loadSlots} disabled={loading || !method}>
-            {loading ? t.loading : t.loadSlots}
-          </button>
-        </section>
-
-        {error && <div className="alert alert-error">{error === 'Failed to load slots' ? t.failedLoad : error}</div>}
-        {message && <div className="alert alert-success">{message === 'Reservation successful' ? t.success : message === 'Slot unavailable' ? t.unavailable : message === 'Reservation failed' ? t.failed : message}</div>}
-
-        <section className="slots-section">
-          {slots.length === 0 ? (
-            <div className="empty-state">
-              <p>{t.noSlots}</p>
-            </div>
-          ) : (
-            <ul className="slots-list">
-              {slots.map((s) => (
-                <li key={s.id} className={`slot-card ${s.reserved ? 'is-reserved' : ''}`}>
-                  <div className="slot-main">
-                    <div className="slot-time">{s.start} - {s.end}</div>
-                    <div className="slot-meta">
-                      <span>{prettyMethodName(s.method)}</span>
-                      <span>{s.date}</span>
-                    </div>
-                  </div>
-
-                  <div className="slot-status">
-                    {s.reserved ? t.reserved : t.available}
-                  </div>
-
-                  <button
-                    className="reserve-button"
-                    onClick={() => reserve(s.id)}
-                    disabled={s.reserved}
-                  >
-                    {s.reserved ? t.booked : t.reserve}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
+        <SlotList
+          slots={slots}
+          prettyMethodName={prettyMethodName}
+          texts={t}
+          onReserve={reserve}
+        />
       </div>
     </div>
   )

@@ -1,9 +1,10 @@
 package com.example.delivery.controller;
 
 import com.example.delivery.dto.ReservationRequest;
+import com.example.delivery.dto.ReservationResponse;
+import com.example.delivery.dto.TimeSlotResponse;
 import com.example.delivery.exception.SlotUnavailableException;
-import com.example.delivery.model.Reservation;
-import com.example.delivery.model.TimeSlot;
+import com.example.delivery.model.DeliveryMethod;
 import com.example.delivery.service.DeliveryService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -23,21 +24,23 @@ public class DeliveryController {
     }
 
     @GetMapping("/methods")
-    public List<com.example.delivery.model.DeliveryMethod> methods() {
+    public List<DeliveryMethod> methods() {
         return service.getMethods();
     }
 
     @GetMapping("/slots")
-    public List<TimeSlot> slots(@RequestParam com.example.delivery.model.DeliveryMethod method,
-                                @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        return service.getSlots(method, date);
+    public List<TimeSlotResponse> slots(@RequestParam DeliveryMethod method,
+                                      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        return service.getSlots(method, date).stream()
+                .map(TimeSlotResponse::from)
+                .toList();
     }
 
     @PostMapping("/reservations")
-    public ResponseEntity<Reservation> reserve(@RequestBody ReservationRequest req) {
+    public ResponseEntity<ReservationResponse> reserve(@RequestBody ReservationRequest req) {
         try {
-            Reservation r = service.reserve(req);
-            return ResponseEntity.status(HttpStatus.CREATED).body(r);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(ReservationResponse.from(service.reserve(req)));
         } catch (SlotUnavailableException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
